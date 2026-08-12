@@ -1,0 +1,6 @@
+{
+  "id": "balance_003",
+  "source_notebook": "11_ban_and_pick_meta_analysis.ipynb",
+  "topic": "stealth_op_champions",
+  "content": "'Stealth OP' champions are defined as those with statistically significant win rates above 53% but ban rates below 10%, indicating the player community is underestimating their actual strength. These champions represent the highest-value targets for proactive balance review before they become widely discovered."
+}

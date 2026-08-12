@@ -1,0 +1,6 @@
+{
+  "id": "duration_001",
+  "source_notebook": "04_match_duration_and_game_health.ipynb",
+  "topic": "game_duration",
+  "content": "Average game duration in the dataset is approximately 30.5 minutes. A Kolmogorov-Smirnov test confirms game duration is NOT normally distributed (right-skewed), which is why non-parametric tests like Mann-Whitney U were used instead of t-tests when comparing duration groups."
+}

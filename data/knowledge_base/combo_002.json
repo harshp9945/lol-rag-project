@@ -1,0 +1,6 @@
+{
+  "id": "combo_002",
+  "source_notebook": "09_objective_combinations_and_strategy.ipynb",
+  "topic": "interaction_effects",
+  "content": "Logistic regression with interaction terms shows the Baron x Dragon interaction has a positive coefficient, indicating these two objectives are synergistic rather than redundant: securing both produces a larger win probability increase than the sum of securing each independently."
+}

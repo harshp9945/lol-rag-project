@@ -1,0 +1,6 @@
+{
+  "id": "snowball_001",
+  "source_notebook": "05_snowball_effect_analysis.ipynb",
+  "topic": "comeback_rate",
+  "content": "Teams that are behind in tower kills still win approximately 27% of matches, indicating comebacks are possible but not common. Teams ahead in tower kills win roughly 70-75% of the time. This suggests the game rewards early leads without making them fully deterministic."
+}

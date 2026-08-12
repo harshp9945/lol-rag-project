@@ -1,0 +1,17 @@
+{
+  "_note": "Replace/extend with queries matching YOUR real knowledge base before calibrating. in_scope must be answerable from the corpus; out_of_scope must not be.",
+  "in_scope": [
+    "Which champions are balance outliers after multiple-testing correction?",
+    "What drives win rates according to the ablation study?",
+    "How important is objective control like dragons and barons?",
+    "Do champion win rates differ between rank tiers?",
+    "How was the false discovery rate controlled in the hypothesis tests?"
+  ],
+  "out_of_scope": [
+    "Who will win the World Championship next year?",
+    "What is the best build for Terran in StarCraft?",
+    "How do I cook risotto?",
+    "What were Riot's revenue figures last quarter?",
+    "Which agent should I main in Valorant?"
+  ]
+}

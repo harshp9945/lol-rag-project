@@ -1,0 +1,6 @@
+{
+  "id": "model_002",
+  "source_notebook": "06_win_prediction_model.ipynb",
+  "topic": "feature_importance",
+  "content": "Permutation feature importance on the win prediction model shows tower kill advantage as the single most important feature, followed by inhibitor-related features. First Blood and First Rift Herald have the lowest permutation importance among all 33 features tested, consistent with their weaker standalone win rate effects."
+}

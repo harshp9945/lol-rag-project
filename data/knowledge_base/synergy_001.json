@@ -1,0 +1,6 @@
+{
+  "id": "synergy_001",
+  "source_notebook": "10_team_composition_analysis.ipynb",
+  "topic": "champion_synergy",
+  "content": "Champion synergy was analyzed for the top 20 champions by pick rate, examining win rates when pairs of champions were on the same team (minimum 50 games per pair for statistical reliability). Some pairs show win rates significantly above 50%, suggesting positive kit synergy beyond what either champion achieves individually."
+}
