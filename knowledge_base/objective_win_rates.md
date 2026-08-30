@@ -1,17 +1,30 @@
 # Objective Win Rates
 
-Securing the first inhibitor is the strongest single predictor of victory
-in the dataset: teams that take the first inhibitor win 91.1% of matches
-(p < 0.001, large effect size).
+Every major objective was tested for its effect on winning, using binomial
+tests with 95% Wilson confidence intervals, chi-square tests with Cramer's
+V for association strength, and a logistic regression (controlling for all
+objectives at once) for odds ratios. All effects are statistically
+significant (p < 0.001).
 
-Securing the first Baron Nashor gives an 81.2% win rate (p < 0.001,
-medium effect size). Baron is secured in roughly 60% of games and
-produces the largest single-event win probability shift in the dataset.
+Win rate when a team secures each objective first:
+- First Inhibitor: 91.1% (95% CI 90.8 to 91.4), large effect. The single
+  strongest predictor of victory in the dataset.
+- First Baron: 80.7% (95% CI 80.2 to 81.1), large effect.
+- First Tower: 70.8% (95% CI 70.4 to 71.2), medium effect.
+- First Rift Herald: 69.5% (95% CI 68.9 to 70.0), medium effect.
+- First Dragon: 68.0% (95% CI 67.6 to 68.4), medium effect.
+- First Blood: 59.1% (95% CI 58.7 to 59.5), small effect. Getting the first
+  kill matters least of the objectives.
 
-All objective win rates were tested with binomial tests and reported with
-95% Wilson score confidence intervals. Association strength was measured
-with chi-square tests and Cramer's V, and practical magnitude with odds
-ratios.
+Association strength (chi-square, Cramer's V) ranks the same way: First
+Inhibitor (V = 0.38) and First Baron (V = 0.29) dominate, while First Blood
+(V = 0.01) is barely associated with the outcome despite being significant.
 
-TODO(from NB02): add win rates and odds ratios for first tower, first
-dragon, and first blood, each with its confidence interval.
+The logistic regression, which isolates each objective's independent
+contribution, confirms the ranking by odds ratio: securing the first
+inhibitor makes a team about 4.9 times more likely to win, first baron
+about 1.55 times, first tower about 1.54 times, and first dragon about 1.44
+times, all else equal. First blood adds the least (1.18 times).
+
+The practical takeaway: structural and late-game objectives (inhibitor,
+baron) decide games far more than early skirmish objectives (first blood).
