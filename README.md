@@ -107,5 +107,4 @@ The assistant refuses questions it cannot ground in the capstone, rather than in
 - [x] Embeddings calibration + TF-IDF vs embeddings writeup
 - [x] FastAPI service (/ask + /health) with request validation and tests
 - [x] Web interface served by FastAPI
-- [ ] A few numbers from NB02 still marked TODO (first tower/dragon/blood)
 - [ ] Docker + cloud deployment (next phase)
