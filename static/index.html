@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoL Analytics Assistant</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #181b22;
+    --panel-2: #1f232c;
+    --border: #2a2f3a;
+    --text: #e6e8ec;
+    --muted: #9aa3b2;
+    --accent: #4f8cff;
+    --accent-dim: #2d4a7a;
+    --good: #3fb27f;
+    --warn: #e0a44a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 32px 20px 80px; }
+  header h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  header p.sub { color: var(--muted); margin: 0 0 24px; font-size: 0.98rem; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .panel h2 { font-size: 0.95rem; margin: 0 0 10px; color: var(--text); }
+  .panel ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.92rem; }
+  .panel ul li { margin-bottom: 4px; }
+  .panel .note { color: var(--muted); font-size: 0.88rem; margin: 10px 0 0; }
+
+  .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .chip {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .chip:hover { border-color: var(--accent); background: #232833; }
+  .chip.range { border-color: var(--accent-dim); }
+
+  .ask-row { display: flex; gap: 10px; margin-bottom: 6px; }
+  #q {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-size: 1rem;
+    outline: none;
+  }
+  #q:focus { border-color: var(--accent); }
+  #send {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  #send:disabled { opacity: 0.5; cursor: default; }
+  .hint { color: var(--muted); font-size: 0.82rem; margin: 0 0 24px; }
+
+  #answer { min-height: 20px; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 8px;
+  }
+  .card.refused { border-color: var(--warn); }
+  .card .a-text { font-size: 1rem; white-space: pre-wrap; }
+  .card .meta {
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+    font-size: 0.82rem; color: var(--muted);
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+  }
+  .badge {
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px 8px; font-size: 0.78rem;
+  }
+  .badge.src { color: var(--accent); border-color: var(--accent-dim); }
+  .loading { color: var(--muted); font-size: 0.95rem; padding: 6px 2px; }
+  .dot { animation: blink 1.4s infinite both; }
+  .dot:nth-child(2) { animation-delay: .2s; }
+  .dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
+  footer { color: var(--muted); font-size: 0.8rem; margin-top: 40px; text-align: center; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>LoL Analytics Assistant</h1>
+    <p class="sub">Ask questions about a 51,490-match League of Legends analytics study (Season 9). Answers come only from the study's findings.</p>
+  </header>
+
+  <div class="panel">
+    <h2>What it can answer</h2>
+    <ul>
+      <li>Objectives: how much Baron, inhibitors, dragons and towers affect win rate</li>
+      <li>Champion balance: which champions are over- or under-powered, plus "stealth OP" picks</li>
+      <li>Comebacks and snowballing: how often teams behind actually recover</li>
+      <li>The win-prediction model: how it performs and why</li>
+      <li>Game health: match duration and meta stability over the season</li>
+    </ul>
+    <p class="note">It answers strictly from the study and will politely refuse anything outside it (live match advice, other games, unrelated topics). Every answer shows the source files it drew from, so you can see it isn't making things up.</p>
+  </div>
+
+  <div class="examples" id="examples"></div>
+
+  <div class="ask-row">
+    <input id="q" type="text" placeholder="Ask a question about the analysis..." autocomplete="off" />
+    <button id="send">Ask</button>
+  </div>
+  <p class="hint">Press Enter to ask. Answers are generated locally, so the first one may take a few seconds.</p>
+
+  <div id="answer"></div>
+
+  <footer>
+    Built on a personal LoL analytics capstone &middot; retrieval-augmented, grounded answers &middot;
+    <a href="/docs">API docs</a>
+  </footer>
+</div>
+
+<script>
+  const EXAMPLES = [
+    { text: "What win rate does taking the first Baron give?" },
+    { text: "How often do teams that fall behind still win?" },
+    { text: "Which champions are the strongest picks?" },
+    { text: "Which champions are stealth OP?" },
+    { text: "Why is the win-prediction model's accuracy so high?", range: true },
+    { text: "What's the best Yasuo build?", range: true },
+  ];
+
+  const examplesEl = document.getElementById('examples');
+  EXAMPLES.forEach(ex => {
+    const chip = document.createElement('button');
+    chip.className = 'chip' + (ex.range ? ' range' : '');
+    chip.textContent = ex.text;
+    chip.onclick = () => { document.getElementById('q').value = ex.text; ask(); };
+    examplesEl.appendChild(chip);
+  });
+
+  const qEl = document.getElementById('q');
+  const sendEl = document.getElementById('send');
+  const answerEl = document.getElementById('answer');
+
+  qEl.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+  sendEl.onclick = ask;
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Light formatting: preserve paragraph breaks, keep [source: ...] readable.
+  function formatAnswer(text) {
+    return escapeHtml(text.trim());
+  }
+
+  async function ask() {
+    const question = qEl.value.trim();
+    if (!question) return;
+    sendEl.disabled = true;
+    answerEl.innerHTML = '<div class="loading">Thinking<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>';
+
+    try {
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
+      if (!res.ok) throw new Error('Request failed (' + res.status + ')');
+      const data = await res.json();
+
+      const refused = data.refused;
+      const scorePct = (data.top_score * 100).toFixed(0);
+      const sources = (data.sources || []).map(s =>
+        '<span class="badge src">' + escapeHtml(s) + '</span>').join(' ');
+
+      let meta = '';
+      if (!refused) {
+        meta = '<div class="meta"><span class="badge">match ' + scorePct + '%</span>' +
+               (sources ? '<span>sources: ' + sources + '</span>' : '') + '</div>';
+      }
+
+      answerEl.innerHTML =
+        '<div class="card' + (refused ? ' refused' : '') + '">' +
+          '<div class="a-text">' + formatAnswer(data.answer) + '</div>' +
+          meta +
+        '</div>';
+    } catch (err) {
+      answerEl.innerHTML = '<div class="card refused"><div class="a-text">' +
+        'Something went wrong reaching the assistant. Is the server running? (' +
+        escapeHtml(err.message) + ')</div></div>';
+    } finally {
+      sendEl.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
