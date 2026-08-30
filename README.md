@@ -60,5 +60,5 @@ gap. The calibration script reports this overlap rather than hiding it.
 - [x] Real capstone findings across 12 knowledge-base files
 - [ ] A few numbers from NB02 and NB06 still marked TODO (first tower/
       dragon/blood rates; model baseline AUCs and feature importances)
-- [ ] Embeddings calibration + TF-IDF vs embeddings writeup
+- [x] Embeddings calibration + TF-IDF vs embeddings writeup
 - [ ] FastAPI service + Docker + CI (next phase)
