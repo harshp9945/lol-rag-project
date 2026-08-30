@@ -1,14 +1,9 @@
-"""TF-IDF retriever: the fast, zero-dependency-beyond-sklearn baseline.
+"""TF-IDF retriever: the fast, interpretable baseline.
 
-How it works, in one breath: every chunk becomes a sparse vector of
-word-importance weights (words frequent in THIS chunk but rare across
-the corpus score high). A query becomes the same kind of vector, and
-cosine similarity ranks chunks by word overlap weighted by rarity.
-
-Strengths: instant indexing, millisecond queries, fully interpretable.
-Weakness: it matches WORDS, not MEANING -- "champion win rate" will not
-match a chunk that only says "pick success percentage". That semantic
-gap is exactly what the embeddings retriever exists to close.
+Each chunk becomes a sparse vector of word-importance weights; a query
+becomes the same, and cosine similarity ranks by rarity-weighted overlap.
+Fast and interpretable, but it matches WORDS not MEANING, which is the
+gap the embeddings retriever closes.
 """
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -18,8 +13,6 @@ from .base import RetrievedChunk, Retriever
 
 class TfidfRetriever(Retriever):
     def __init__(self, ngram_range: tuple[int, int] = (1, 2)):
-        # Unigrams + bigrams: bigrams let "win rate" behave as one term,
-        # which noticeably improves precision on stat-heavy text.
         self._vectorizer = TfidfVectorizer(ngram_range=ngram_range, stop_words="english")
         self._matrix = None
         self._chunks: list[dict] = []

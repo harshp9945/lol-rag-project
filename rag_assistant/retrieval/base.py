@@ -1,7 +1,7 @@
 """Retriever interface.
 
 Every retrieval backend (TF-IDF, embeddings, anything future) implements
-this one contract. The rest of the system -- pipeline, guardrail, evals --
+this one contract. The rest of the system (pipeline, guardrail, evals)
 only ever talks to this interface, so retrievers are swappable without
 touching any other code. This is the single most important design
 decision in the project.
@@ -14,8 +14,8 @@ from dataclasses import dataclass
 class RetrievedChunk:
     """One chunk of knowledge-base text returned by a retriever."""
     text: str
-    source: str          # which knowledge-base file it came from
-    score: float         # similarity score (backend-specific scale!)
+    source: str
+    score: float
 
 
 class Retriever(ABC):

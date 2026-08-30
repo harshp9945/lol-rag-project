@@ -1,9 +1,10 @@
 """Interactive CLI for the RAG assistant.
 
 Usage:
-    python cli.py                          # tfidf + mock (offline demo)
-    python cli.py --backend ollama         # local llama3.1 via Ollama
+    python cli.py                                   # tfidf + mock (offline demo)
+    python cli.py --backend ollama                  # local llama3.1 via Ollama
     python cli.py --retriever embeddings --backend anthropic
+    python cli.py --threshold 0.12                  # override refusal threshold
 """
 import argparse
 import logging
@@ -28,7 +29,7 @@ def build(args) -> RAGPipeline:
     backends = {"mock": MockBackend, "ollama": OllamaBackend, "anthropic": AnthropicBackend}
     try:
         backend = backends[args.backend]()
-    except Exception as exc:  # missing SDK, missing key, Ollama down...
+    except Exception as exc:
         log.error("could not start backend '%s': %s", args.backend, exc)
         log.error("falling back to mock backend so retrieval is still inspectable")
         backend = MockBackend()
@@ -38,10 +39,10 @@ def build(args) -> RAGPipeline:
         log.error("knowledge base '%s' is empty; add .md files first", args.kb_dir)
         sys.exit(1)
     retriever.index(chunks)
+    pipe = RAGPipeline(retriever, backend, threshold=args.threshold)
     log.info("ready: retriever=%s backend=%s chunks=%d threshold=%.3f",
-             retriever.name, backend.name, len(chunks),
-             RAGPipeline(retriever, backend).threshold)
-    return RAGPipeline(retriever, backend, threshold=args.threshold)
+             retriever.name, backend.name, len(chunks), pipe.threshold)
+    return pipe
 
 
 def main():
@@ -50,7 +51,7 @@ def main():
     parser.add_argument("--backend", default="mock", choices=["mock", "ollama", "anthropic"])
     parser.add_argument("--kb-dir", default="knowledge_base")
     parser.add_argument("--threshold", type=float, default=None,
-                    help="override the per-backend refusal threshold")
+                        help="override the per-backend refusal threshold")
     args = parser.parse_args()
     pipe = build(args)
 

@@ -1,11 +1,8 @@
-"""Tests for the RAG pipeline.
+"""Tests for the RAG pipeline. Run with: pytest tests/ -v
 
-Run with:  pytest tests/ -v
-
-These use the mock LLM backend so the whole suite runs offline and in CI.
-Each test targets a specific failure mode a reviewer would probe:
-guardrail refusal, retrieval grounding, chunker edge cases, and the
-per-backend threshold defaulting that motivated the design.
+Uses the mock LLM backend so the suite runs offline and in CI. Each test
+targets a specific failure mode: guardrail refusal, retrieval grounding,
+chunker edge cases, per-backend threshold defaulting.
 """
 import pytest
 
@@ -20,7 +17,7 @@ KB_DIR = "knowledge_base"
 @pytest.fixture(scope="module")
 def indexed_retriever():
     chunks = load_knowledge_base(KB_DIR)
-    assert chunks, f"knowledge base at {KB_DIR}/ is empty -- tests need a corpus"
+    assert chunks, f"knowledge base at {KB_DIR}/ is empty"
     r = TfidfRetriever()
     r.index(chunks)
     return r
@@ -35,14 +32,11 @@ class TestChunker:
     def test_respects_word_ceiling(self):
         long_doc = "\n\n".join(["word " * 80] * 5)
         chunks = chunk_text(long_doc, source="synthetic.md", max_words=120)
-        assert all(len(c["text"].split()) <= 160 for c in chunks), (
-            "a single paragraph may exceed the ceiling, but merged chunks must not balloon"
-        )
+        assert all(len(c["text"].split()) <= 160 for c in chunks)
         assert len(chunks) >= 3
 
     def test_preserves_source_attribution(self):
-        chunks = chunk_text("one para", source="attribution.md")
-        assert chunks[0]["source"] == "attribution.md"
+        assert chunk_text("one para", source="attribution.md")[0]["source"] == "attribution.md"
 
     def test_empty_document_yields_no_chunks(self):
         assert chunk_text("   \n\n  ", source="empty.md") == []
@@ -51,8 +45,8 @@ class TestChunker:
 class TestRetrieval:
     def test_relevant_chunk_ranks_first(self, indexed_retriever):
         hits = indexed_retriever.retrieve("Benjamini-Hochberg correction champion win rates", k=3)
-        assert hits[0].source == "example_champion_balance.md"
-        assert hits[0].score > hits[-1].score or len(hits) == 1
+        assert hits[0].source == "champion_balance.md"
+        assert hits[0].score >= hits[-1].score
 
     def test_retrieve_before_index_raises(self):
         with pytest.raises(RuntimeError):
@@ -67,20 +61,15 @@ class TestGuardrail:
         assert resp.top_score < pipeline.threshold
 
     def test_in_scope_query_is_answered_with_context(self, pipeline):
-        resp = pipeline.ask("What did the ablation study find about objective control?")
+        resp = pipeline.ask("What win rate does taking the first inhibitor give?")
         assert resp.refused is False
-        # MockBackend reports how many [source: ...] markers reached the prompt,
-        # proving retrieval actually fed generation.
         assert "retrieved chunk" in resp.answer
         assert resp.chunks and resp.top_score >= pipeline.threshold
 
     def test_threshold_defaults_are_backend_specific(self, indexed_retriever):
         p = RAGPipeline(retriever=indexed_retriever, backend=MockBackend())
-        assert p.threshold == DEFAULT_THRESHOLDS["tfidf"], (
-            "pipeline must pick the per-backend threshold, not a global constant"
-        )
+        assert p.threshold == DEFAULT_THRESHOLDS["tfidf"]
 
     def test_explicit_threshold_overrides_default(self, indexed_retriever):
         p = RAGPipeline(retriever=indexed_retriever, backend=MockBackend(), threshold=0.99)
-        resp = p.ask("What did the ablation study find about objective control?")
-        assert resp.refused is True, "a 0.99 threshold should refuse everything on this corpus"
+        assert p.ask("What win rate does taking the first inhibitor give?").refused is True

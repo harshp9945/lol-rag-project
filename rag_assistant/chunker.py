@@ -1,24 +1,15 @@
 """Chunker: splits knowledge-base documents into retrievable pieces.
 
-Why chunk at all? Retrieval works best when each indexed unit contains
-one coherent idea. Whole documents are too broad (the query matches the
-doc but the LLM gets 2000 words of mostly-irrelevant context); single
-sentences are too narrow (they lose surrounding meaning).
-
-Strategy here: paragraph-based chunks with a word-count ceiling.
-Paragraphs are natural semantic boundaries in written findings; the
-ceiling stops a rambling paragraph from becoming a mega-chunk. Both
-knobs are parameters, not constants, so eval experiments can vary them.
+Retrieval works best when each indexed unit holds one coherent idea.
+Whole documents are too broad; single sentences lose context. Strategy:
+paragraph-based chunks with a word-count ceiling. Both knobs are
+parameters so eval experiments can vary them.
 """
 from pathlib import Path
 
 
 def chunk_text(text: str, source: str, max_words: int = 120) -> list[dict]:
-    """Split one document into chunks of at most max_words words.
-
-    Paragraphs (blank-line separated) are kept intact when possible and
-    merged greedily until the ceiling would be exceeded.
-    """
+    """Split one document into chunks of at most max_words words."""
     paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
     chunks: list[dict] = []
     current: list[str] = []

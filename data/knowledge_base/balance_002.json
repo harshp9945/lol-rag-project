@@ -1,6 +1,0 @@
-{
-  "id": "balance_002",
-  "source_notebook": "11_ban_and_pick_meta_analysis.ipynb",
-  "topic": "ban_rate_meta",
-  "content": "Yasuo has a ban rate of approximately 64%, the highest in the dataset, despite not having the single highest win rate among all 138 champions. This indicates the community's perceived threat level (reflected in ban rate) does not perfectly correlate with actual statistical win rate, based on Spearman rank correlation analysis between ban rate and win rate."
-}

@@ -1,6 +1,0 @@
-{
-  "id": "obj_001",
-  "source_notebook": "02_match_outcome_drivers.ipynb",
-  "topic": "objective_win_rates",
-  "content": "First Inhibitor win rate: The team that secures the first inhibitor wins 91.1% of matches. This is the single strongest objective predictor in the dataset (p<0.001, large effect size). 95% confidence interval: 90.4% to 91.8%, based on 51,490 ranked matches from Season 9."
-}

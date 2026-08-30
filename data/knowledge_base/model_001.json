@@ -1,6 +1,0 @@
-{
-  "id": "model_001",
-  "source_notebook": "06_win_prediction_model.ipynb",
-  "topic": "win_prediction_model",
-  "content": "A HistGradientBoosting model trained on 33 engineered features achieves an AUC-ROC of 0.9977 using 5-fold stratified cross-validation. However, a model using only 3 features (First Inhibitor, First Baron, First Tower) already achieves 0.90 AUC. This demonstrates that late-game objective control is near-deterministic for match outcome -- the high AUC reflects the dataset's nature (post-game objectives correlate strongly with the outcome they helped cause) rather than exceptional model sophistication."
-}

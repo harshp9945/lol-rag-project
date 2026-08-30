@@ -1,6 +1,0 @@
-{
-  "id": "obj_002",
-  "source_notebook": "02_match_outcome_drivers.ipynb",
-  "topic": "objective_win_rates",
-  "content": "First Baron win rate: The team that secures the first Baron Nashor wins 81.2% of matches (p<0.001, medium-large effect size, Cramer's V approximately 0.29). This is the second-strongest single objective predictor after First Inhibitor."
-}

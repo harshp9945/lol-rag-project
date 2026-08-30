@@ -1,6 +1,0 @@
-{
-  "id": "balance_001",
-  "source_notebook": "03_champion_balance_analysis.ipynb",
-  "topic": "champion_balance",
-  "content": "Champion balance was tested using binomial tests across 138 champions with Benjamini-Hochberg false discovery rate correction to account for multiple simultaneous testing. After correction, a subset of champions show statistically significant win rates above 53% (overpowered candidates) and below 47% (underpowered candidates) at the 95% confidence level."
-}
