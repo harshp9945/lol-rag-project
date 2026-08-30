@@ -26,7 +26,7 @@ class EmbeddingsRetriever(Retriever):
             )
         self._model = SentenceTransformer(model_name)
         self._collection = chromadb.Client().create_collection(
-            name="kb", metadata={"hnsw:space": "cosine"}
+            name="knowledge_base", metadata={"hnsw:space": "cosine"}
         )
         self._indexed = False
 
