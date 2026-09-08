@@ -1,5 +1,8 @@
 # LoL Analytics RAG Assistant
 
+**Live demo: https://lol-rag-project.onrender.com**
+_(hosted on a free tier, so the first load may take 30-60 seconds to wake)_
+
 A retrieval-augmented assistant over the findings of my 51,490-match
 League of Legends analytics capstone (Season 9, 2017). It answers only
 from the knowledge base and refuses questions the corpus cannot ground.
