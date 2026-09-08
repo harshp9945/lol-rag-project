@@ -13,7 +13,7 @@ from .retrieval.base import RetrievedChunk, Retriever
 
 DEFAULT_THRESHOLDS = {
     "tfidf": 0.15,
-    "embeddings": 0.424,
+    "embeddings": 0.447,
 }
 
 REFUSAL_MESSAGE = (
