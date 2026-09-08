@@ -1,5 +1,8 @@
 # LoL Analytics RAG Assistant
 
+**Live demo: https://lol-rag-project.onrender.com**
+_(hosted on a free tier, so the first load may take 30-60 seconds to wake)_
+
 A retrieval-augmented assistant over the findings of my 51,490-match
 League of Legends analytics capstone (Season 9, 2017). It answers only
 from the knowledge base and refuses questions the corpus cannot ground.
@@ -107,4 +110,4 @@ The assistant refuses questions it cannot ground in the capstone, rather than in
 - [x] Embeddings calibration + TF-IDF vs embeddings writeup
 - [x] FastAPI service (/ask + /health) with request validation and tests
 - [x] Web interface served by FastAPI
-- [ ] Docker + cloud deployment (next phase)
+- [x] Docker + cloud deployment
