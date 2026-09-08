@@ -67,3 +67,61 @@ class AnthropicBackend(LLMBackend):
             messages=[{"role": "user", "content": prompt}],
         )
         return msg.content[0].text
+
+
+class GeminiBackend(LLMBackend):
+    """Google Gemini backend using the free-tier REST API.
+
+    Uses Gemini Flash, which has a free tier suitable for a public demo.
+    Reads the API key from the GEMINI_API_KEY environment variable. Kept on
+    the REST API via urllib so it needs no extra dependency, which keeps the
+    deployed image small.
+    """
+
+    def __init__(self, model: str = "gemini-3.5-flash-lite", api_key: str | None = None):
+        import os
+        self._model = model
+        self._api_key = api_key or os.getenv("GEMINI_API_KEY")
+        if not self._api_key:
+            raise RuntimeError("GEMINI_API_KEY not set")
+
+    @property
+    def name(self) -> str:
+        return f"gemini:{self._model}"
+
+    def generate(self, prompt: str) -> str:
+        import json
+        import time
+        import urllib.request
+        import urllib.error
+
+        url = (
+            f"https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{self._model}:generateContent?key={self._api_key}"
+        )
+        body = json.dumps({
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {"maxOutputTokens": 1500, "temperature": 0.2},
+        }).encode()
+
+        last_error = None
+        for attempt in range(3):
+            req = urllib.request.Request(
+                url, data=body, headers={"Content-Type": "application/json"}
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=60) as resp:
+                    data = json.loads(resp.read())
+                try:
+                    return data["candidates"][0]["content"]["parts"][0]["text"]
+                except (KeyError, IndexError):
+                    return ("The model did not return an answer for this question "
+                            "(the response may have been filtered). Please try rephrasing.")
+            except urllib.error.HTTPError as e:
+                last_error = e
+                if e.code == 503 and attempt < 2:
+                    time.sleep(2)   # brief pause, then retry a busy model
+                    continue
+                detail = e.read().decode("utf-8", "ignore")
+                raise RuntimeError(f"Gemini API error {e.code}: {detail}") from None
+        raise RuntimeError(f"Gemini API error after retries: {last_error}")
