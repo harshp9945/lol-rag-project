@@ -5,6 +5,11 @@ similarity is below a per-backend threshold, it refuses instead of
 hallucinating. Thresholds differ by backend because similarity scales
 differ; recalibrate with evals/calibrate_thresholds.py after any corpus
 or chunking change.
+
+The retrieve step and the generate step are separate methods so a caller
+(for example the API's daily usage cap) can run the free, local retrieval
+and guardrail on every request but gate only the LLM generation. ask()
+runs both in sequence for the simple case (CLI, tests).
 """
 from dataclasses import dataclass, field
 
@@ -36,6 +41,15 @@ Answer:"""
 
 
 @dataclass
+class Retrieval:
+    """Result of the retrieval + guardrail step, before any generation."""
+    question: str
+    chunks: list[RetrievedChunk]
+    top_score: float
+    refused: bool
+
+
+@dataclass
 class RAGResponse:
     answer: str
     refused: bool
@@ -54,13 +68,31 @@ class RAGPipeline:
         )
         self.k = k
 
-    def ask(self, question: str) -> RAGResponse:
+    def retrieve(self, question: str) -> Retrieval:
+        """Run retrieval and the guardrail only. Free and local; no LLM call."""
         chunks = self.retriever.retrieve(question, k=self.k)
         top_score = chunks[0].score if chunks else 0.0
-        if top_score < self.threshold:
+        return Retrieval(
+            question=question,
+            chunks=chunks,
+            top_score=top_score,
+            refused=top_score < self.threshold,
+        )
+
+    def generate(self, retrieval: Retrieval) -> str:
+        """Generate an answer for an approved retrieval (makes the LLM call)."""
+        context = "\n\n".join(
+            f"[source: {c.source}]\n{c.text}" for c in retrieval.chunks
+        )
+        prompt = PROMPT_TEMPLATE.format(context=context, question=retrieval.question)
+        return self.backend.generate(prompt)
+
+    def ask(self, question: str) -> RAGResponse:
+        """Full pipeline: retrieve, guardrail, then generate if allowed."""
+        r = self.retrieve(question)
+        if r.refused:
             return RAGResponse(answer=REFUSAL_MESSAGE, refused=True,
-                               chunks=chunks, top_score=top_score)
-        context = "\n\n".join(f"[source: {c.source}]\n{c.text}" for c in chunks)
-        prompt = PROMPT_TEMPLATE.format(context=context, question=question)
-        answer = self.backend.generate(prompt)
-        return RAGResponse(answer=answer, refused=False, chunks=chunks, top_score=top_score)
+                               chunks=r.chunks, top_score=r.top_score)
+        answer = self.generate(r)
+        return RAGResponse(answer=answer, refused=False,
+                           chunks=r.chunks, top_score=r.top_score)
