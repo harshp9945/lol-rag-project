@@ -4,7 +4,7 @@ pytest>=7.0
 fastapi>=0.110
 uvicorn>=0.29
 httpx>=0.27
-# optional extras for the embeddings retriever:
-#   pip install sentence-transformers chromadb
-# optional extras for real answer generation (free, local):
+sentence-transformers>=2.2
+chromadb>=0.4
+# optional for real answer generation locally (not needed in the deployed demo):
 #   install Ollama from https://ollama.com, then: ollama pull llama3.1

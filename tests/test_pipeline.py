@@ -63,7 +63,7 @@ class TestGuardrail:
     def test_in_scope_query_is_answered_with_context(self, pipeline):
         resp = pipeline.ask("What win rate does taking the first inhibitor give?")
         assert resp.refused is False
-        assert "retrieved chunk" in resp.answer
+        assert "relevant source" in resp.answer
         assert resp.chunks and resp.top_score >= pipeline.threshold
 
     def test_threshold_defaults_are_backend_specific(self, indexed_retriever):
