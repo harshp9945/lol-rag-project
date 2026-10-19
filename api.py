@@ -89,6 +89,16 @@ app = FastAPI(
     version="1.0.0",
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+import os
+_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o.strip() for o in _origins],
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
 # Module-level holder for the single shared pipeline.
 _pipeline: RAGPipeline | None = None
 
